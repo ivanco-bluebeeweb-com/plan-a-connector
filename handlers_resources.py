@@ -19,7 +19,7 @@ async def list_emissions(params: ListEmissionRecordParams, ctx) -> ActionResult:
             rid = str(r.get("id") or r.get("key") or r.get("uuid") or "unknown")
             rname = r.get("name") or r.get("title") or r.get("label") or rid
             items.append({"id": rid, "name": rname, "status": r.get("status"), "created_at": r.get("createdAt") or r.get("created_at"), "raw": r})
-        return ActionResult.ok({"emissions": items, "total": len(items)}, summary=f"Found {len(items)} emissions.")
+        return ActionResult.success({"emissions": items, "total": len(items)}, summary=f"Found {len(items)} emissions.")
     except Exception as e:
         return ActionResult.error(f"Error listing emissions: {e}")
 
@@ -30,7 +30,7 @@ async def get_emissionrecord(params: GetEmissionRecordParams, ctx) -> ActionResu
         r = await client.get_emissionrecord(params.emissionrecord_id)
         rid = str(r.get("id") or params.emissionrecord_id)
         rname = r.get("name") or r.get("title") or rid
-        return ActionResult.ok({"id": rid, "name": rname, "status": r.get("status"), "created_at": r.get("createdAt") or r.get("created_at"), "raw": r}, summary=f"Retrieved EmissionRecord {rid}.")
+        return ActionResult.success({"id": rid, "name": rname, "status": r.get("status"), "created_at": r.get("createdAt") or r.get("created_at"), "raw": r}, summary=f"Retrieved EmissionRecord {rid}.")
     except Exception as e:
         return ActionResult.error(f"Error retrieving EmissionRecord: {e}")
 
@@ -39,7 +39,7 @@ async def audit_emissionrecord_health(params: ConnectionIdParams, ctx) -> Action
     client = await resolve_client(ctx, params.connection_id)
     try:
         items = await client.list_emissions(limit=50)
-        return ActionResult.ok({
+        return ActionResult.success({
             "healthy": True,
             "total_emissions": len(items),
             "details": {"sample_count": len(items)},
