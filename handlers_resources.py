@@ -10,7 +10,7 @@ from schemas import (
 from handlers_connection import resolve_client
 
 @chat.function("list_emissions", "List emissions in Plan A.", action_type="read", chain_callable=True, event="plan-a-connector.list_emissions", effects=["read:emissions"], data_model=EmissionRecordList)
-async def list_emissions(params: ListEmissionRecordParams, ctx) -> ActionResult:
+async def list_emissions(ctx, params: ListEmissionRecordParams) -> ActionResult:
     client = await resolve_client(ctx, params.connection_id)
     try:
         raw_items = await client.list_emissions(limit=params.limit)
@@ -24,7 +24,7 @@ async def list_emissions(params: ListEmissionRecordParams, ctx) -> ActionResult:
         return ActionResult.error(f"Error listing emissions: {e}")
 
 @chat.function("get_emissionrecord", "Get details of one EmissionRecord in Plan A.", action_type="read", chain_callable=True, event="plan-a-connector.get_emissionrecord", effects=["read:emissionrecord"], data_model=EmissionRecordRecord)
-async def get_emissionrecord(params: GetEmissionRecordParams, ctx) -> ActionResult:
+async def get_emissionrecord(ctx, params: GetEmissionRecordParams) -> ActionResult:
     client = await resolve_client(ctx, params.connection_id)
     try:
         r = await client.get_emissionrecord(params.emissionrecord_id)
@@ -35,7 +35,7 @@ async def get_emissionrecord(params: GetEmissionRecordParams, ctx) -> ActionResu
         return ActionResult.error(f"Error retrieving EmissionRecord: {e}")
 
 @chat.function("audit_emissionrecord_health", "Audit health of Plan A emissions and connectivity.", action_type="read", chain_callable=True, event="plan-a-connector.audit_emissionrecord_health", effects=["read:audit"], data_model=AuditHealthReport)
-async def audit_emissionrecord_health(params: ConnectionIdParams, ctx) -> ActionResult:
+async def audit_emissionrecord_health(ctx, params: ConnectionIdParams) -> ActionResult:
     client = await resolve_client(ctx, params.connection_id)
     try:
         items = await client.list_emissions(limit=50)
